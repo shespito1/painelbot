@@ -4,6 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Remoto - Bot TikTok</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // Substitua APENAS o apiKey se você tiver criado as credenciais Web. 
+        // Como o banco está no "modo de teste", podemos enviar direto pela URL:
+        const firebaseConfig = {
+            databaseURL: "https://bot-tiktok-e3f95-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.enviarComando = function() {
+            const mode = document.getElementById("botMode").value;
+            const url = document.getElementById("liveUrl").value;
+            const headless = document.getElementById("headless").checked;
+            const statusEl = document.getElementById("statusText");
+            
+            // Verifica o botão de texto dos comentários. Como é remoto, enviaremos um padrão se tiver vazio.
+            
+            const comando = {
+                acao: "iniciar",
+                modo: mode,
+                url_live: url,
+                invisivel: headless,
+                timestamp: Date.now()
+            };
+
+            statusEl.innerHTML = "Enviando comando para o PC...";
+            statusEl.style.color = "yellow";
+
+            set(ref(db, 'comandos_pc'), comando)
+            .then(() => {
+                statusEl.innerHTML = "✅ Comando Recebido com Sucesso! Seu computador deve iniciar os navegadores agora.";
+                statusEl.style.color = "#00ff00";
+            })
+            .catch((error) => {
+                statusEl.innerHTML = "❌ Erro ao enviar: " + error;
+                statusEl.style.color = "red";
+            });
+        }
+    </script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -85,28 +128,17 @@
 
     <div class="form-group">
         <label>🔗 Link da Live (se modo Live):</label>
-        <input type="text" id="liveUrl" placeholder="https://www.tiktok.com/@usuario/live">
+        <input type="text" id="liveUrl" value="https://www.tiktok.com/@usuario/live">
     </div>
 
-    <button onclick="enviarComando()">🔥 INICIAR NO COMPUTADOR</button>
-    
-    <div class="status" id="statusText">Aguardando comando...</div>
-</div>
+    <div class="form-group">
+        <label><input type="checkbox" id="headless" checked> 👻 Modo Invisível (Muito mais leve)</label>
+    </div>
 
-<script>
-    function enviarComando() {
-        const mode = document.getElementById("botMode").value;
-        const url = document.getElementById("liveUrl").value;
-        const statusEl = document.getElementById("statusText");
-        
-        statusEl.innerHTML = "Subindo na nuvem... (Em breve conectaremos ao Firebase)";
-        statusEl.style.color = "#00d2ff";
-        
-        // Aqui na fase 3 nós vamos colocar o código do Firebase 
-        // para isso chegar no seu PC real!
-        console.log("Comando pronto para:", mode, url);
-    }
-</script>
+    <button onclick="enviarComando()">🔥 INICIAR BOT</button>
+    
+    <div class="status" id="statusText">Seu status aparecerá aqui.</div>
+</div>
 
 </body>
 </html>
