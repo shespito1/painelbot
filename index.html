@@ -52,7 +52,76 @@
                 statusEl.innerHTML = "❌ Erro ao enviar: " + error;
                 statusEl.style.color = "red";
             });
-        }
+        };
+
+        // Função NOVA para comandar a parada das contas
+        window.enviarComandoParar = function() {
+            const statusEl = document.getElementById("statusText");
+            
+            const comando = {
+                acao: "parar",
+                timestamp: Date.now()
+            };
+
+            statusEl.innerHTML = "Enviando comando para PARAR...";
+            statusEl.style.color = "yellow";
+
+            set(ref(db, 'comandos_pc'), comando)
+            .then(() => {
+                statusEl.innerHTML = "⛔ Comando Recebido! O computador vai desligar os navegadores.";
+                statusEl.style.color = "#ff4444";
+            })
+            .catch((error) => {
+                statusEl.innerHTML = "❌ Erro ao enviar: " + error;
+                statusEl.style.color = "red";
+            });
+        };
+
+        // Função para enviar os dados da nova conta para o Firebase/PC
+        window.cadastrarContaRemota = function() {
+            const email = document.getElementById("newEmail").value.trim();
+            const senha = document.getElementById("newPassword").value.trim();
+            const proxy = document.getElementById("newProxy").value.trim();
+            const statusCadastro = document.getElementById("statusCadastro");
+
+            if (!email || !senha) {
+                alert("⚠️ Por favor, preencha o E-mail e a Senha da conta!");
+                return;
+            }
+
+            const comando = {
+                acao: "cadastrar_conta",
+                email: email,
+                senha: senha,
+                proxy: proxy || "auto",
+                timestamp: Date.now()
+            };
+
+            statusCadastro.style.display = "block";
+            statusCadastro.innerHTML = "Enviando nova conta para o PC...";
+            statusCadastro.style.color = "yellow";
+
+            set(ref(db, 'comandos_pc'), comando)
+            .then(() => {
+                statusCadastro.innerHTML = "✅ Conta enviada com sucesso para salvamento no PC!";
+                statusCadastro.style.color = "#00ff00";
+                
+                // Limpa os campos depois de enviar
+                document.getElementById("newEmail").value = "";
+                document.getElementById("newPassword").value = "";
+                
+                // Avisa o usuário na tela e depois esconde
+                setTimeout(() => {
+                    document.getElementById("caixaCadastro").style.display = "none";
+                    statusCadastro.style.display = "none";
+                }, 3000);
+            })
+            .catch((error) => {
+                statusCadastro.style.display = "block";
+                statusCadastro.innerHTML = "❌ Erro de rede. Tente novamente: " + error;
+                statusCadastro.style.color = "red";
+            });
+        };
     </script>
     <style>
         body {
@@ -188,7 +257,7 @@
 
 <script>
     // Função para esconder a aba da live e mostrar a aba de texto quando trocar
-    function mudarModo() {
+    window.mudarModo = function() {
         const mode = document.getElementById("botMode").value;
         if (mode === "live") {
             document.getElementById("caixaLive").style.display = "block";
@@ -197,29 +266,6 @@
             document.getElementById("caixaLive").style.display = "none";
             document.getElementById("caixaFeed").style.display = "block";
         }
-    }
-
-    // Função NOVA para comandar a parada das contas
-    window.enviarComandoParar = function() {
-        const statusEl = document.getElementById("statusText");
-        
-        const comando = {
-            acao: "parar",
-            timestamp: Date.now()
-        };
-
-        statusEl.innerHTML = "Enviando comando para PARAR...";
-        statusEl.style.color = "yellow";
-
-        window.dbSet(window.dbRef(window.appDb, 'comandos_pc'), comando)
-        .then(() => {
-            statusEl.innerHTML = "⛔ Comando Recebido! O computador vai desligar os navegadores.";
-            statusEl.style.color = "#ff4444";
-        })
-        .catch((error) => {
-            statusEl.innerHTML = "❌ Erro ao enviar: " + error;
-            statusEl.style.color = "red";
-        });
     }
 
     // Função para mostrar/esconder o formulário de cadastro
@@ -234,52 +280,6 @@
         } else {
             caixa.style.display = "none";
         }
-    }
-
-    // Função para enviar os dados da nova conta para o Firebase/PC
-    window.cadastrarContaRemota = function() {
-        const email = document.getElementById("newEmail").value.trim();
-        const senha = document.getElementById("newPassword").value.trim();
-        const proxy = document.getElementById("newProxy").value.trim();
-        const statusCadastro = document.getElementById("statusCadastro");
-
-        if (!email || !senha) {
-            alert("⚠️ Por favor, preencha o E-mail e a Senha da conta!");
-            return;
-        }
-
-        const comando = {
-            acao: "cadastrar_conta",
-            email: email,
-            senha: senha,
-            proxy: proxy || "auto",
-            timestamp: Date.now()
-        };
-
-        statusCadastro.style.display = "block";
-        statusCadastro.innerHTML = "Enviando nova conta para o PC...";
-        statusCadastro.style.color = "yellow";
-
-        window.dbSet(window.dbRef(window.appDb, 'comandos_pc'), comando)
-        .then(() => {
-            statusCadastro.innerHTML = "✅ Conta enviada com sucesso para salvamento no PC!";
-            statusCadastro.style.color = "#00ff00";
-            
-            // Limpa os campos depois de enviar
-            document.getElementById("newEmail").value = "";
-            document.getElementById("newPassword").value = "";
-            
-            // Avisa o usuário na tela e depois esconde
-            setTimeout(() => {
-                document.getElementById("caixaCadastro").style.display = "none";
-                statusCadastro.style.display = "none";
-            }, 3000);
-        })
-        .catch((error) => {
-            statusCadastro.style.display = "block";
-            statusCadastro.innerHTML = "❌ Erro de rede. Tente novamente: " + error;
-            statusCadastro.style.color = "red";
-        });
     }
 </script>
 
