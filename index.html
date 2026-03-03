@@ -23,12 +23,14 @@
             const headless = document.getElementById("headless").checked;
             const statusEl = document.getElementById("statusText");
             
-            // Verifica o botão de texto dos comentários. Como é remoto, enviaremos um padrão se tiver vazio.
+            const comentariosRaw = document.getElementById("comentarios").value;
+            const comentariosProcessados = comentariosRaw.split('\n').map(c => c.trim()).filter(c => c !== "");
             
             const comando = {
                 acao: "iniciar",
                 modo: mode,
                 url_live: url,
+                comentarios: comentariosProcessados,
                 invisivel: headless,
                 timestamp: Date.now()
             };
@@ -120,25 +122,53 @@
     
     <div class="form-group">
         <label>Modo de Operação</label>
-        <select id="botMode">
+        <select id="botMode" onchange="mudarModo()">
             <option value="live">🟢 Interagir em Live</option>
             <option value="feed">💬 Comentar no Feed</option>
         </select>
     </div>
 
-    <div class="form-group">
-        <label>🔗 Link da Live (se modo Live):</label>
-        <input type="text" id="liveUrl" value="https://www.tiktok.com/@usuario/live">
+    <!-- O QUE MOSTRA QUANDO FOR MODO LIVE -->
+    <div id="caixaLive">
+        <div class="form-group">
+            <label>🔗 Link da Live:</label>
+            <input type="text" id="liveUrl" value="https://www.tiktok.com/@usuario/live">
+        </div>
+    </div>
+
+    <!-- O QUE MOSTRA QUANDO FOR MODO COMENTÁRIOS -->
+    <div id="caixaFeed" style="display: none;">
+        <div class="form-group">
+            <label>💬 Comentários (um por linha):</label>
+            <textarea id="comentarios" rows="4" placeholder="Muito bom!&#10;Incrível&#10;Gostei">Muito bom!&#10;Incrível&#10;Sensacional!</textarea>
+        </div>
     </div>
 
     <div class="form-group">
-        <label><input type="checkbox" id="headless" checked> 👻 Modo Invisível (Muito mais leve)</label>
+        <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="headless" checked style="width: 20px; height: 20px;"> 
+            <span>👻 <b>Modo Invisível</b> <br><small style="color: #bbb; font-weight: normal;">(Muito mais leve. Roda em segundo plano)</small></span>
+        </label>
     </div>
 
-    <button onclick="enviarComando()">🔥 INICIAR BOT</button>
+    <button onclick="enviarComando()">🔥 INICIAR CONTAS</button>
     
-    <div class="status" id="statusText">Seu status aparecerá aqui.</div>
+    <div class="status" id="statusText">Painel aguardando...</div>
 </div>
+
+<script>
+    // Função para esconder a aba da live e mostrar a aba de texto quando trocar
+    function mudarModo() {
+        const mode = document.getElementById("botMode").value;
+        if (mode === "live") {
+            document.getElementById("caixaLive").style.display = "block";
+            document.getElementById("caixaFeed").style.display = "none";
+        } else {
+            document.getElementById("caixaLive").style.display = "none";
+            document.getElementById("caixaFeed").style.display = "block";
+        }
+    }
+</script>
 
 </body>
 </html>
