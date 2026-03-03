@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Remoto - Bot TikTok</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { margin-top: 0; color: #00d2ff; }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: white;
+            box-sizing: border-box;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00C853, #00796B);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: linear-gradient(135deg, #00E676, #00897B); }
+        button:active { transform: scale(0.98); }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #333;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚀 Controle Remoto Bot</h2>
+    
+    <div class="form-group">
+        <label>Modo de Operação</label>
+        <select id="botMode">
+            <option value="live">🟢 Interagir em Live</option>
+            <option value="feed">💬 Comentar no Feed</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>🔗 Link da Live (se modo Live):</label>
+        <input type="text" id="liveUrl" placeholder="https://www.tiktok.com/@usuario/live">
+    </div>
+
+    <button onclick="enviarComando()">🔥 INICIAR NO COMPUTADOR</button>
+    
+    <div class="status" id="statusText">Aguardando comando...</div>
+</div>
+
+<script>
+    function enviarComando() {
+        const mode = document.getElementById("botMode").value;
+        const url = document.getElementById("liveUrl").value;
+        const statusEl = document.getElementById("statusText");
+        
+        statusEl.innerHTML = "Subindo na nuvem... (Em breve conectaremos ao Firebase)";
+        statusEl.style.color = "#00d2ff";
+        
+        // Aqui na fase 3 nós vamos colocar o código do Firebase 
+        // para isso chegar no seu PC real!
+        console.log("Comando pronto para:", mode, url);
+    }
+</script>
+
+</body>
+</html>
