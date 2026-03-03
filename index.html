@@ -17,6 +17,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Define as funções de banco de dados neste escopo!
+        window.dbRef = ref;
+        window.dbSet = set;
+        window.appDb = db;
+
         window.enviarComando = function() {
             const mode = document.getElementById("botMode").value;
             const url = document.getElementById("liveUrl").value;
@@ -206,7 +211,7 @@
         statusEl.innerHTML = "Enviando comando para PARAR...";
         statusEl.style.color = "yellow";
 
-        set(ref(db, 'comandos_pc'), comando)
+        window.dbSet(window.dbRef(window.appDb, 'comandos_pc'), comando)
         .then(() => {
             statusEl.innerHTML = "⛔ Comando Recebido! O computador vai desligar os navegadores.";
             statusEl.style.color = "#ff4444";
@@ -255,7 +260,7 @@
         statusCadastro.innerHTML = "Enviando nova conta para o PC...";
         statusCadastro.style.color = "yellow";
 
-        set(ref(db, 'comandos_pc'), comando)
+        window.dbSet(window.dbRef(window.appDb, 'comandos_pc'), comando)
         .then(() => {
             statusCadastro.innerHTML = "✅ Conta enviada com sucesso para salvamento no PC!";
             statusCadastro.style.color = "#00ff00";
