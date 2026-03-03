@@ -116,7 +116,7 @@
             font-weight: bold;
             font-size: 14px;
         }
-        input[type="text"], input[type="password"], select {
+        input[type="text"], input[type="password"], input[type="number"], select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -173,11 +173,11 @@
         <div class="form-group" style="display: flex; gap: 10px;">
             <div style="flex: 1;">
                 <label>� Qtd. Contas (Viewers):</label>
-                <input type="number" id="qtdeViewers" value="10" min="1" placeholder="Ex: 10">
+                <input type="number" id="qtdeViewers" value="10" min="1" placeholder="Ex: 10" oninput="validarInput(this)">
             </div>
             <div style="flex: 1;">
                 <label>🗣️ Dessas, quantas comentam?</label>
-                <input type="number" id="qtdeComments" value="5" min="0" placeholder="Ex: 5">
+                <input type="number" id="qtdeComments" value="5" min="0" placeholder="Ex: 5" oninput="validarInput(this)">
             </div>
         </div>
 
@@ -213,6 +213,20 @@
 </div>
 
 <script>
+    // Variável global para guardar o limite atual
+    window.maxContasPC = 100; // Começa alto até checar
+    
+    // Função para validar inputs em tempo real (enquanto digita)
+    window.validarInput = function(el) {
+        let valor = parseInt(el.value);
+        if (valor > window.maxContasPC) {
+            el.value = window.maxContasPC;
+            // Pisca a borda em vermelho pra avisar
+            el.style.borderColor = "red";
+            setTimeout(() => el.style.borderColor = "#333", 500);
+        }
+    };
+
     // Função para esconder a aba da live e mostrar a aba de texto quando trocar
     window.mudarModo = function() {
         const mode = document.getElementById("botMode").value;
@@ -231,6 +245,9 @@
         fetch(url).then(r => r.json()).then(data => {
             if(data && data.total_contas !== undefined) {
                 const qtd = data.total_contas;
+                // ATUALIZA A VARIÁVEL GLOBAL
+                window.maxContasPC = qtd;
+
                 document.getElementById("pcStatus").innerText = `🖥️ PC Conectado! ${qtd} contas disponíveis.`;
                 document.getElementById("pcStatus").style.color = "#00ff00";
                 
@@ -245,7 +262,7 @@
                 // Atualiza o placeholder
                 inputV.placeholder = `Máx: ${qtd}`;
                 
-                // Se o usuário digitou mais do que tem, corrige visualmente (opcional, as vezes é chato)
+                // Se o valor atual for maior que o permitido, corrige agora também
                 if(parseInt(inputV.value) > qtd) inputV.value = qtd;
                 if(parseInt(inputC.value) > qtd) inputC.value = qtd;
                 
