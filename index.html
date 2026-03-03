@@ -81,7 +81,7 @@
             font-weight: bold;
             font-size: 14px;
         }
-        input[type="text"], select {
+        input[type="text"], input[type="password"], select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -152,9 +152,32 @@
     </div>
 
     <button onclick="enviarComando()" style="margin-bottom: 10px;">🔥 INICIAR CONTAS</button>
-    <button onclick="enviarComandoParar()" style="background: linear-gradient(135deg, #d32f2f, #b71c1c);">🛑 PARAR TUDO</button>
+    <button onclick="enviarComandoParar()" style="background: linear-gradient(135deg, #d32f2f, #b71c1c); margin-bottom: 10px;">🛑 PARAR TUDO</button>
+    <button onclick="mostrarCadastro()" style="background: linear-gradient(135deg, #1976D2, #1565C0);">➕ CADASTRAR CONTA</button>
     
     <div class="status" id="statusText">Painel aguardando...</div>
+
+    <!-- Seção de Cadastro de Contas escondida por padrão -->
+    <div id="caixaCadastro" style="display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid #444;">
+        <h3 style="margin-top: 0; color: #00d2ff;">📝 Nova Conta</h3>
+        
+        <div class="form-group">
+            <label>📧 Email do TikTok:</label>
+            <input type="text" id="newEmail" placeholder="seu-email@gmail.com">
+        </div>
+        
+        <div class="form-group">
+            <label>🔑 Senha do TikTok:</label>
+            <input type="password" id="newPassword" placeholder="SuaSenha123!">
+        </div>
+        
+        <div class="form-group">
+            <label>🌐 Proxy (Opcional):</label>
+            <input type="text" id="newProxy" placeholder="Deixe 'auto' para usar proxy grátis" value="auto">
+        </div>
+        
+        <button onclick="cadastrarContaRemota()" style="background: linear-gradient(135deg, #FF8C00, #EF6C00);">💾 SALVAR CONTA</button>
+    </div>
 </div>
 
 <script>
@@ -189,6 +212,65 @@
         })
         .catch((error) => {
             statusEl.innerHTML = "❌ Erro ao enviar: " + error;
+            statusEl.style.color = "red";
+        });
+    }
+
+    // Função para mostrar/esconder o formulário de cadastro
+    window.mostrarCadastro = function() {
+        const caixa = document.getElementById("caixaCadastro");
+        if (caixa.style.display === "none") {
+            caixa.style.display = "block";
+            // Rola a tela para baixo suavemente
+            setTimeout(() => {
+                document.querySelector('.container').scrollBy({ top: 300, behavior: 'smooth' });
+            }, 100);
+        } else {
+            caixa.style.display = "none";
+        }
+    }
+
+    // Função para enviar os dados da nova conta para o Firebase/PC
+    window.cadastrarContaRemota = function() {
+        const email = document.getElementById("newEmail").value.trim();
+        const senha = document.getElementById("newPassword").value.trim();
+        const proxy = document.getElementById("newProxy").value.trim();
+        const statusEl = document.getElementById("statusText");
+
+        if (!email || !senha) {
+            alert("⚠️ Por favor, preencha o E-mail e a Senha da conta!");
+            return;
+        }
+
+        const comando = {
+            acao: "cadastrar_conta",
+            email: email,
+            senha: senha,
+            proxy: proxy || "auto",
+            timestamp: Date.now()
+        };
+
+        statusEl.innerHTML = "Enviando nova conta para o PC...";
+        statusEl.style.color = "yellow";
+
+        set(ref(db, 'comandos_pc'), comando)
+        .then(() => {
+            statusEl.innerHTML = "✅ Conta salva com sucesso!";
+            statusEl.style.color = "#00ff00";
+            
+            // Limpa os campos depois de enviar
+            document.getElementById("newEmail").value = "";
+            document.getElementById("newPassword").value = "";
+            
+            // Esconde o painel depois de 2 segundos
+            setTimeout(() => {
+                document.getElementById("caixaCadastro").style.display = "none";
+                statusEl.innerHTML = "Painel aguardando...";
+                statusEl.style.color = "white";
+            }, 2000);
+        })
+        .catch((error) => {
+            statusEl.innerHTML = "❌ Erro ao salvar conta: " + error;
             statusEl.style.color = "red";
         });
     }
