@@ -208,6 +208,7 @@
     <button onclick="enviarComandoParar()" style="background: linear-gradient(135deg, #d32f2f, #b71c1c); margin-bottom: 10px;">🛑 PARAR TUDO</button>
     
     <div class="status" id="statusText">Painel aguardando...</div>
+    <div style="margin-top: 5px; color: yellow; font-size: 11px;" id="pcStatus">PC desconectado?</div>
 
 </div>
 
@@ -223,6 +224,40 @@
             document.getElementById("caixaFeed").style.display = "block";
         }
     }
+    
+    // Atualiza quantas contas o PC tem a cada 5 segundos
+    function checarPC() {
+        const url = "https://bot-tiktok-e3f95-default-rtdb.firebaseio.com/status_pc.json";
+        fetch(url).then(r => r.json()).then(data => {
+            if(data && data.total_contas !== undefined) {
+                const qtd = data.total_contas;
+                document.getElementById("pcStatus").innerText = `🖥️ PC Conectado! ${qtd} contas disponíveis.`;
+                document.getElementById("pcStatus").style.color = "#00ff00";
+                
+                // Atualiza os inputs
+                const inputV = document.getElementById("qtdeViewers");
+                const inputC = document.getElementById("qtdeComments");
+                
+                // Define o máximo permitido
+                inputV.max = qtd;
+                inputC.max = qtd;
+                
+                // Atualiza o placeholder
+                inputV.placeholder = `Máx: ${qtd}`;
+                
+                // Se o usuário digitou mais do que tem, corrige visualmente (opcional, as vezes é chato)
+                if(parseInt(inputV.value) > qtd) inputV.value = qtd;
+                if(parseInt(inputC.value) > qtd) inputC.value = qtd;
+                
+            }
+        }).catch(e => {
+            document.getElementById("pcStatus").innerText = "PC não reportou status ainda.";
+        });
+    }
+    
+    // Roda ao abrir e a cada 5s
+    checarPC();
+    setInterval(checarPC, 5000);
 </script>
 
 </body>
