@@ -28,6 +28,10 @@
             const headless = document.getElementById("headless").checked;
             const statusEl = document.getElementById("statusText");
             
+            const qtdeViewers = parseInt(document.getElementById("qtdeViewers").value) || 10;
+            const qtdeComments = parseInt(document.getElementById("qtdeComments").value) || 5;
+            const enviarLikes = document.getElementById("enviarLikes").checked;
+
             const comentariosRaw = document.getElementById("comentarios").value;
             const comentariosProcessados = comentariosRaw.split('\n').map(c => c.trim()).filter(c => c !== "");
             
@@ -37,6 +41,9 @@
                 url_live: url,
                 comentarios: comentariosProcessados,
                 invisivel: headless,
+                qtde_viewers: qtdeViewers,
+                qtde_comments: qtdeComments,
+                enviar_likes: enviarLikes,
                 timestamp: Date.now()
             };
 
@@ -161,6 +168,24 @@
         <div class="form-group">
             <label>🔗 Link da Live:</label>
             <input type="text" id="liveUrl" value="https://www.tiktok.com/@usuario/live">
+        </div>
+        
+        <div class="form-group" style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>👀 Qtd. Viewers:</label>
+                <input type="number" id="qtdeViewers" value="10" min="1">
+            </div>
+            <div style="flex: 1;">
+                <label>💬 Qtd. Comentam:</label>
+                <input type="number" id="qtdeComments" value="5" min="0">
+            </div>
+        </div>
+
+        <div class="form-group">
+             <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="enviarLikes" checked style="width: 20px; height: 20px;">
+                <span>❤️ Enviar Curtidas (Taps na tela)</span>
+            </label>
         </div>
     </div>
 
