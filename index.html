@@ -151,7 +151,8 @@
         </label>
     </div>
 
-    <button onclick="enviarComando()">🔥 INICIAR CONTAS</button>
+    <button onclick="enviarComando()" style="margin-bottom: 10px;">🔥 INICIAR CONTAS</button>
+    <button onclick="enviarComandoParar()" style="background: linear-gradient(135deg, #d32f2f, #b71c1c);">🛑 PARAR TUDO</button>
     
     <div class="status" id="statusText">Painel aguardando...</div>
 </div>
@@ -167,6 +168,29 @@
             document.getElementById("caixaLive").style.display = "none";
             document.getElementById("caixaFeed").style.display = "block";
         }
+    }
+
+    // Função NOVA para comandar a parada das contas
+    window.enviarComandoParar = function() {
+        const statusEl = document.getElementById("statusText");
+        
+        const comando = {
+            acao: "parar",
+            timestamp: Date.now()
+        };
+
+        statusEl.innerHTML = "Enviando comando para PARAR...";
+        statusEl.style.color = "yellow";
+
+        set(ref(db, 'comandos_pc'), comando)
+        .then(() => {
+            statusEl.innerHTML = "⛔ Comando Recebido! O computador vai desligar os navegadores.";
+            statusEl.style.color = "#ff4444";
+        })
+        .catch((error) => {
+            statusEl.innerHTML = "❌ Erro ao enviar: " + error;
+            statusEl.style.color = "red";
+        });
     }
 </script>
 
