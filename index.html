@@ -23,44 +23,25 @@
         window.appDb = db;
 
         window.enviarComando = function() {
-            const mode = document.getElementById("botMode").value;
             const headless = document.getElementById("headless").checked;
             const statusEl = document.getElementById("statusText");
 
-            // Coleta dados comuns ou específicos
-            let liveUrl = "";
-            let videoUrl = "";
-            let qtdeViewers = 10;
-            let qtdeComments = 0;
-            let enviarLikes = false;
+            // Coleta dados específicos
+            let liveUrl = document.getElementById("liveUrl").value;
+            let qtdeViewers = parseInt(document.getElementById("qtdeViewers").value) || 10;
+            let qtdeComments = parseInt(document.getElementById("qtdeComments").value) || 5;
+            let enviarLikes = document.getElementById("enviarLikes").checked;
             let comentarios = [];
-            let repeticoes = 0;
-
-            if (mode === "live") {
-                liveUrl = document.getElementById("liveUrl").value;
-                qtdeViewers = parseInt(document.getElementById("qtdeViewers").value) || 10;
-                qtdeComments = parseInt(document.getElementById("qtdeComments").value) || 5;
-                enviarLikes = document.getElementById("enviarLikes").checked;
-                // Comentários não usados no modo live da forma antiga, mas podemos deixar vazio
-            } else if (mode === "video") {
-                videoUrl = document.getElementById("videoUrl").value;
-                qtdeViewers = parseInt(document.getElementById("qtdeContasVideo").value) || 10; // "Viewers" aqui são as contas de boost
-                repeticoes = parseInt(document.getElementById("repeticoesVideo").value) || 20;
-            }
             
             const comando = {
                 acao: "iniciar",
-                modo: mode,
+                modo: "live",
                 // Campos Modo Live
                 url_live: liveUrl,
                 qtde_viewers: qtdeViewers,
                 qtde_comments: qtdeComments,
                 enviar_likes: enviarLikes,
                 comentarios: comentarios,
-                
-                // Campos Modo Vídeo
-                url_video: videoUrl,
-                repeticoes: repeticoes,
 
                 invisivel: headless,
                 timestamp: Date.now()
@@ -173,14 +154,6 @@
 
 <div class="container">
     <h2>🚀 Controle Remoto Bot</h2>
-    
-    <div class="form-group">
-        <label>Modo de Operação</label>
-        <select id="botMode" onchange="mudarModo()">
-            <option value="live">🟢 Interagir em Live</option>
-            <option value="video">🚀 Boost em Vídeo (Curtir + Copiar Link)</option>
-        </select>
-    </div>
 
     <!-- O QUE MOSTRA QUANDO FOR MODO LIVE -->
     <div id="caixaLive">
@@ -205,25 +178,6 @@
                 <input type="checkbox" id="enviarLikes" checked style="width: 20px; height: 20px;">
                 <span>❤️ Enviar Curtidas (Taps na tela)</span>
             </label>
-        </div>
-    </div>
-
-    <!-- O QUE MOSTRA QUANDO FOR MODO VÍDEO -->
-    <div id="caixaVideo" style="display: none;">
-        <div class="form-group">
-            <label>🔗 Link do Vídeo (Específico):</label>
-            <input type="text" id="videoUrl" placeholder="https://www.tiktok.com/@usuario/video/123456789">
-        </div>
-
-        <div class="form-group">
-            <label>🔄 Repetições (Entrar/Sair/Copiar Link):</label>
-            <input type="number" id="repeticoesVideo" value="20" min="1">
-            <small style="color: #bbb;">Cada conta vai repetir esse processo X vezes.</small>
-        </div>
-        
-        <div class="form-group">
-            <label>👥 Qtd. Contas Ativas:</label>
-            <input type="number" id="qtdeContasVideo" value="10" min="1" oninput="validarInput(this)">
         </div>
     </div>
 
@@ -256,18 +210,6 @@
             setTimeout(() => el.style.borderColor = "#333", 500);
         }
     };
-
-    // Função para esconder a aba da live e mostrar a aba de texto quando trocar
-    window.mudarModo = function() {
-        const mode = document.getElementById("botMode").value;
-        if (mode === "live") {
-            document.getElementById("caixaLive").style.display = "block";
-            document.getElementById("caixaVideo").style.display = "none";
-        } else {
-            document.getElementById("caixaLive").style.display = "none";
-            document.getElementById("caixaVideo").style.display = "block";
-        }
-    }
     
     // Atualiza quantas contas o PC tem a cada 5 segundos
     function checarPC() {
