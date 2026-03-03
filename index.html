@@ -177,6 +177,7 @@
         </div>
         
         <button onclick="cadastrarContaRemota()" style="background: linear-gradient(135deg, #FF8C00, #EF6C00);">💾 SALVAR CONTA</button>
+        <div class="status" id="statusCadastro" style="display: none;"></div>
     </div>
 </div>
 
@@ -235,7 +236,7 @@
         const email = document.getElementById("newEmail").value.trim();
         const senha = document.getElementById("newPassword").value.trim();
         const proxy = document.getElementById("newProxy").value.trim();
-        const statusEl = document.getElementById("statusText");
+        const statusCadastro = document.getElementById("statusCadastro");
 
         if (!email || !senha) {
             alert("⚠️ Por favor, preencha o E-mail e a Senha da conta!");
@@ -250,28 +251,29 @@
             timestamp: Date.now()
         };
 
-        statusEl.innerHTML = "Enviando nova conta para o PC...";
-        statusEl.style.color = "yellow";
+        statusCadastro.style.display = "block";
+        statusCadastro.innerHTML = "Enviando nova conta para o PC...";
+        statusCadastro.style.color = "yellow";
 
         set(ref(db, 'comandos_pc'), comando)
         .then(() => {
-            statusEl.innerHTML = "✅ Conta salva com sucesso!";
-            statusEl.style.color = "#00ff00";
+            statusCadastro.innerHTML = "✅ Conta enviada com sucesso para salvamento no PC!";
+            statusCadastro.style.color = "#00ff00";
             
             // Limpa os campos depois de enviar
             document.getElementById("newEmail").value = "";
             document.getElementById("newPassword").value = "";
             
-            // Esconde o painel depois de 2 segundos
+            // Avisa o usuário na tela e depois esconde
             setTimeout(() => {
                 document.getElementById("caixaCadastro").style.display = "none";
-                statusEl.innerHTML = "Painel aguardando...";
-                statusEl.style.color = "white";
-            }, 2000);
+                statusCadastro.style.display = "none";
+            }, 3000);
         })
         .catch((error) => {
-            statusEl.innerHTML = "❌ Erro ao salvar conta: " + error;
-            statusEl.style.color = "red";
+            statusCadastro.style.display = "block";
+            statusCadastro.innerHTML = "❌ Erro de rede. Tente novamente: " + error;
+            statusCadastro.style.color = "red";
         });
     }
 </script>
